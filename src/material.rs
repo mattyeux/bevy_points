@@ -2,9 +2,10 @@ use bevy::{
     asset::Asset,
     color::LinearRgba,
     pbr::{MAX_CASCADES_PER_LIGHT, MAX_DIRECTIONAL_LIGHTS},
-    prelude::{AlphaMode, Material, Mesh},
+    prelude::Mesh,
     reflect::TypePath,
     render::render_resource::{AsBindGroup, ShaderDefVal, ShaderType},
+    sprite::{AlphaMode2d, Material2d},
 };
 
 use crate::SHADER_HANDLE;
@@ -19,7 +20,7 @@ pub struct PointsShaderSettings {
 impl Default for PointsShaderSettings {
     fn default() -> Self {
         Self {
-            point_size: 1.,
+            point_size: 10.,
             opacity: 1.,
             color: Default::default(),
         }
@@ -32,7 +33,7 @@ pub struct PointsMaterial {
     #[uniform(0)]
     pub settings: PointsShaderSettings,
     pub depth_bias: f32,
-    pub alpha_mode: AlphaMode,
+    pub alpha_mode_2d: AlphaMode2d,
     pub use_vertex_color: bool,
     pub perspective: bool,
     pub circle: bool,
@@ -43,9 +44,9 @@ impl Default for PointsMaterial {
         Self {
             settings: PointsShaderSettings::default(),
             depth_bias: 0.,
-            alpha_mode: Default::default(),
+            alpha_mode_2d: Default::default(),
             use_vertex_color: true,
-            perspective: true,
+            perspective: false,
             circle: false,
         }
     }
@@ -68,7 +69,8 @@ impl From<&PointsMaterial> for PointsMaterialKey {
     }
 }
 
-impl Material for PointsMaterial {
+// Implementation for 2d
+impl Material2d for PointsMaterial {
     fn vertex_shader() -> bevy::render::render_resource::ShaderRef {
         bevy::render::render_resource::ShaderRef::Handle(SHADER_HANDLE.clone())
     }
@@ -77,8 +79,8 @@ impl Material for PointsMaterial {
         bevy::render::render_resource::ShaderRef::Handle(SHADER_HANDLE.clone())
     }
 
-    fn alpha_mode(&self) -> bevy::prelude::AlphaMode {
-        self.alpha_mode
+    fn alpha_mode(&self) -> bevy::sprite::AlphaMode2d {
+        self.alpha_mode_2d
     }
 
     fn depth_bias(&self) -> f32 {
@@ -86,10 +88,10 @@ impl Material for PointsMaterial {
     }
 
     fn specialize(
-        _pipeline: &bevy::pbr::MaterialPipeline<Self>,
+        // _pipeline: &bevy::pbr::MaterialPipeline<Self>,
         descriptor: &mut bevy::render::render_resource::RenderPipelineDescriptor,
         layout: &bevy::render::mesh::MeshVertexBufferLayoutRef,
-        key: bevy::pbr::MaterialPipelineKey<Self>,
+        key: bevy::sprite::Material2dKey<Self>,
     ) -> Result<(), bevy::render::render_resource::SpecializedMeshPipelineError> {
         descriptor.primitive.cull_mode = None;
 

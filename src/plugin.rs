@@ -1,6 +1,7 @@
 use bevy::{
     asset::load_internal_asset,
     prelude::{MaterialPlugin, Plugin, Shader},
+    sprite::Material2dPlugin,
 };
 
 use crate::{prelude::PointsMaterial, SHADER_HANDLE};
@@ -15,6 +16,6 @@ impl Plugin for PointsPlugin {
             "./shaders/points.wgsl",
             Shader::from_wgsl
         );
-        app.add_plugins(MaterialPlugin::<PointsMaterial>::default());
+        app.add_plugins(Material2dPlugin::<PointsMaterial>::default());
     }
 }
